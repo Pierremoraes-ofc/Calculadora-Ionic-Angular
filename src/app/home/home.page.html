@@ -1,0 +1,699 @@
+<ion-app>
+  <!-- Menu lateral permanece o mesmo -->
+  <ion-menu contentId="main-content">
+    <ion-header>
+      <ion-toolbar color="tertiary">
+        <ion-title>Menu</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <ion-list>
+        <ion-item button (click)="navigate('Calculadora')">
+          <ion-icon name="calculator-outline"></ion-icon>
+            Calculadora Classica
+        </ion-item>
+        <ion-item button (click)="navigate('Temperatura')">
+          <ion-icon name="thermometer-outline"></ion-icon>
+            Temperatura
+        </ion-item>
+        <ion-item button (click)="navigate('Tempo')">
+          <ion-icon name="today-outline"></ion-icon>
+            Tempo
+        </ion-item>
+        <ion-item button (click)="navigate('Moeda')">
+          <ion-icon name="cash-outline"></ion-icon>
+            Moeda
+        </ion-item>
+        <ion-item button (click)="navigate('Programador')">
+          <ion-icon name="code-slash-outline"></ion-icon>
+            Programador
+        </ion-item>
+      </ion-list>
+    </ion-content>
+  </ion-menu>
+
+  <!-- Conteúdo principal -->
+  <div class="ion-page" id="main-content">
+    <ion-header>
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-menu-button></ion-menu-button>
+        </ion-buttons>
+        <ion-title>CalculadoraDev</ion-title>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="ion-padding">
+      <!-- Calculadora -->
+      <div *ngIf="selectedPage === 'Calculadora'" class="calculator">
+        <h2><ion-icon name="calculator-outline"></ion-icon> Calculadora Classica</h2>
+
+        <!-- Área do Histórico Expansível -->
+        <!-- Área do Histórico Expansível -->
+        <ion-card class="history-card">
+          <ion-card-header (click)="toggleHistory()">
+            <ion-card-title>
+              Histórico
+              <ion-icon [name]="isHistoryVisible ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
+            </ion-card-title>
+          </ion-card-header>
+          <!-- Exibir a última linha quando o histórico está escondido -->
+          <ion-card-content>
+            <div *ngIf="!isHistoryVisible" style="color: grey;">
+              {{ getLastLine() }}
+            </div>
+            <!-- Exibe o conteúdo completo somente se isHistoryVisible for verdadeiro -->
+            <div *ngIf="isHistoryVisible" style="color: grey;" [innerHTML]="currenthistory"></div>
+          </ion-card-content>
+        </ion-card>
+
+
+        <!-- Display -->
+        <div class="display">
+          <div style="color: red;" class="current-input">{{ currentInput }}</div>
+          <div style="color: aqua;" class="result">{{ result }}</div>
+        </div>
+
+        <!-- Teclado -->
+        <div class="buttons">
+          <ion-button (click)="memoryRecall()">MR</ion-button>
+          <ion-button (click)="memoryStore()">MS</ion-button>
+          <ion-button (click)="memoryAdd()">M+</ion-button>
+          <ion-button (click)="memorySubtract()">M-</ion-button>
+          <ion-button (click)="memoryClear()">MC</ion-button>
+
+          <ion-button (click)="calculatePercentage()">%</ion-button>
+          <ion-button (click)="clear()">C</ion-button>
+          <ion-button (click)="backspace()">⌫</ion-button>
+
+          <ion-button (click)="inverse()">1/x</ion-button>
+          <ion-button (click)="square()">x²</ion-button>
+          <ion-button (click)="squareRoot()">√</ion-button>
+          <ion-button (click)="appendToInputsimbol('/')">÷</ion-button>
+
+          <ion-button (click)="appendToInput('7')">7</ion-button>
+          <ion-button (click)="appendToInput('8')">8</ion-button>
+          <ion-button (click)="appendToInput('9')">9</ion-button>
+          <ion-button (click)="appendToInputsimbol('*')">X</ion-button>
+
+          <ion-button (click)="appendToInput('4')">4</ion-button>
+          <ion-button (click)="appendToInput('5')">5</ion-button>
+          <ion-button (click)="appendToInput('6')">6</ion-button>
+          <ion-button (click)="appendToInputsimbol('-')">-</ion-button>
+
+          <ion-button (click)="appendToInput('1')">1</ion-button>
+          <ion-button (click)="appendToInput('2')">2</ion-button>
+          <ion-button (click)="appendToInput('3')">3</ion-button>
+          <ion-button (click)="appendToInputsimbol('+')">+</ion-button>
+
+          <ion-button (click)="toggleSign()">±</ion-button>
+          <ion-button (click)="appendToInput('0')">0</ion-button>
+          <ion-button (click)="appendToInput('.')">.</ion-button>
+          <ion-button (click)="calculate()">=</ion-button>
+        </div>
+        <!-- Teclado -->
+      </div>
+      <!-- Calculadora -->
+
+      <!-- Temperatura -->
+      <div *ngIf="selectedPage === 'Temperatura'">
+        <h2><ion-icon name="thermometer-outline"></ion-icon> Temperatura</h2>
+        <!---->
+        <div class="container">            
+          <ion-list>
+            <ion-item>
+              <ion-textarea (click)="editField('celsius')" [(ngModel)]="convertedTemp.celsius" (ngModelChange)="updateTemp('celsius')">
+                <div slot="label">Celsius</div>
+              </ion-textarea>
+            </ion-item>
+
+            <ion-item>
+              <ion-textarea (click)="editField('fahrenheit')" [(ngModel)]="convertedTemp.fahrenheit" (ngModelChange)="updateTemp('fahrenheit')">
+                <div slot="label">Fahrenheit</div>
+              </ion-textarea>
+            </ion-item>
+
+            <ion-item>
+              <ion-textarea (click)="editField('kelvin')" [(ngModel)]="convertedTemp.kelvin" (ngModelChange)="updateTemp('kelvin')">
+                <div slot="label">Kelvin</div>
+              </ion-textarea>
+            </ion-item>
+          </ion-list>
+        </div>
+
+        <div class="calculator">
+          <!-- Teclado -->
+          <div class="buttons">
+            <ion-button (click)="appendValuetemp(7)">7</ion-button>
+            <ion-button (click)="appendValuetemp(8)">8</ion-button>
+            <ion-button (click)="appendValuetemp(9)">9</ion-button>
+            <ion-button (click)="clearInputt()">C</ion-button>
+
+            <ion-button (click)="appendValuetemp(4)">4</ion-button>
+            <ion-button (click)="appendValuetemp(5)">5</ion-button>
+            <ion-button (click)="appendValuetemp(6)">6</ion-button>
+            <ion-button (click)="backspacetemp()">⌫</ion-button>
+
+            <ion-button (click)="appendValuetemp(1)">1</ion-button>
+            <ion-button (click)="appendValuetemp(2)">2</ion-button>
+            <ion-button (click)="appendValuetemp(3)">3</ion-button>
+            <ion-button style="opacity: 0%;"></ion-button>
+
+            <ion-button style="opacity: 0%;"></ion-button>
+            <ion-button (click)="appendValuetemp(0)">0</ion-button>
+            <ion-button (click)="appendValuetemp('.')">.</ion-button>
+          </div>
+          <!-- Teclado -->
+        </div>
+        <!---->
+      </div>
+      <!-- Temperatura -->
+
+      <!-- Tempo -->
+      <div *ngIf="selectedPage === 'Tempo'">
+        <h2><ion-icon name="today-outline"></ion-icon> Tempo</h2>
+      
+        <!-- converssor -->
+        <div class="container">            
+          <ion-list>
+            <ion-item>
+              <ion-textarea (click)="editField('microseconds')" [(ngModel)]="convertedTime.microseconds" (ngModelChange)="updateTime('microseconds')">
+                <div slot="label">Microsegundos</div>
+              </ion-textarea>
+            </ion-item>
+
+            <ion-item>
+              <ion-textarea (click)="editField('milliseconds')" [(ngModel)]="convertedTime.milliseconds" (ngModelChange)="updateTime('milliseconds')">
+                <div slot="label">Milissegundos</div>
+              </ion-textarea>
+            </ion-item>
+
+            <ion-item>
+              <ion-textarea (click)="editField('seconds')" [(ngModel)]="convertedTime.seconds" (ngModelChange)="updateTime('seconds')">
+                <div slot="label">Segundos</div>
+              </ion-textarea>
+            </ion-item>
+
+            <ion-item>
+              <ion-textarea (click)="editField('minutes')" [(ngModel)]="convertedTime.minutes" (ngModelChange)="updateTime('minutes')">
+                <div slot="label">Minutos</div>
+              </ion-textarea>
+            </ion-item>
+
+            <ion-item>
+              <ion-textarea (click)="editField('hours')" [(ngModel)]="convertedTime.hours" (ngModelChange)="updateTime('hours')">
+                <div slot="label">Horas</div>
+              </ion-textarea>
+            </ion-item>
+          </ion-list>
+          
+          <ion-list>
+            <ion-item>
+              <ion-textarea (click)="editField('days')" [(ngModel)]="convertedTime.days" (ngModelChange)="updateTime('days')">
+                <div slot="label">Dias</div>
+              </ion-textarea>
+            </ion-item>
+
+            <ion-item>
+              <ion-textarea (click)="editField('weeks')" [(ngModel)]="convertedTime.weeks" (ngModelChange)="updateTime('weeks')">
+                <div slot="label">Semanas</div>
+              </ion-textarea>
+            </ion-item>
+
+            <ion-item>
+              <ion-textarea (click)="editField('months')" [(ngModel)]="convertedTime.months" (ngModelChange)="updateTime('months')">
+                <div slot="label">Meses</div>
+              </ion-textarea>
+            </ion-item>
+
+            <ion-item>
+              <ion-textarea (click)="editField('years')" [(ngModel)]="convertedTime.years" (ngModelChange)="updateTime('years')">
+                <div slot="label">Anos</div>
+              </ion-textarea>
+            </ion-item>
+          </ion-list>
+        </div>
+        <!-- converssor -->
+      
+        <!-- Teclado -->
+        <div class="calculator">
+          <div class="buttons">
+            <ion-button (click)="appendValue(7)">7</ion-button>
+            <ion-button (click)="appendValue(8)">8</ion-button>
+            <ion-button (click)="appendValue(9)">9</ion-button>
+            <ion-button (click)="clearInput()">C</ion-button>
+
+            <ion-button (click)="appendValue(4)">4</ion-button>
+            <ion-button (click)="appendValue(5)">5</ion-button>
+            <ion-button (click)="appendValue(6)">6</ion-button>
+            <ion-button (click)="backspace()">⌫</ion-button>
+
+            <ion-button (click)="appendValue(1)">1</ion-button>
+            <ion-button (click)="appendValue(2)">2</ion-button>
+            <ion-button (click)="appendValue(3)">3</ion-button>
+            <ion-button style="opacity: 0%;"></ion-button>
+
+            <ion-button style="opacity: 0%;"></ion-button>
+            <ion-button (click)="appendValue(0)">0</ion-button>
+            <ion-button (click)="appendValue('.')">.</ion-button>
+          </div>
+          <!-- Teclado -->
+        </div>
+        <!-- Teclado -->
+      </div>      
+      <!-- Tempo -->
+       
+      <!-- Moeda -->
+      <div *ngIf="selectedPage === 'Moeda'">
+        <h2><ion-icon name="cash-outline"></ion-icon> Moeda</h2>
+
+        <!-- Ion-item para valor base -->
+        <ion-item>
+          <ion-textarea (click)="editField('targetCurrency')" [(ngModel)]="convertedMoney.targetCurrency">
+            <div slot="label">Moeda Base:</div>
+          </ion-textarea>          
+          <ion-select aria-label="Moeda Convertida" interface="popover" [(ngModel)]="targetCurrency" placeholder="targetCurrency">
+            <ion-select-option value="AFN">Afghani - Afghanistan</ion-select-option>
+            <ion-select-option value="DZD">Algerian Dinar - Algeria</ion-select-option>
+            <ion-select-option value="BOB">Boliviano - Bolivia</ion-select-option>
+            <ion-select-option value="VES">Bolívar - Venezuela</ion-select-option>
+            <ion-select-option value="MMK">Burmese Kyat - Myanmar</ion-select-option>
+            <ion-select-option value="CDF">Congolese Franc - Democratic Republic of the Congo</ion-select-option>
+            <ion-select-option value="CLP">Chilean Peso - Chile</ion-select-option>
+            <ion-select-option value="CNY">Chinese Renminbi - China</ion-select-option>
+            <ion-select-option value="COP">Colombian Peso - Colombia</ion-select-option>
+            <ion-select-option value="CRC">Costa Rican Colon - Costa Rica</ion-select-option>
+            <ion-select-option value="CUP">Cuban Peso - Cuba</ion-select-option>
+            <ion-select-option value="CVE">Cape Verdean Escudo - Cape Verde</ion-select-option>
+            <ion-select-option value="CZK">Czech Koruna - Czech Republic</ion-select-option>
+            <ion-select-option value="HRK">Croatian Kuna - Croatia</ion-select-option>
+            <ion-select-option value="KHR">Cambodian Riel - Cambodia</ion-select-option>
+            <ion-select-option value="KMF">Comorian Franc - Comoros</ion-select-option>
+            <ion-select-option value="XAF">CFA Franc - Central African</ion-select-option>
+            <ion-select-option value="XOF">CFA franc - West African</ion-select-option>
+            <ion-select-option value="XPF">CFP Franc - Collectivités d'Outre-Mer</ion-select-option>
+            <ion-select-option value="BHD">Dinar - Bahrain</ion-select-option>
+            <ion-select-option value="AUD">Dollar - Australia</ion-select-option>
+            <ion-select-option value="BBD">Dollar - Barbados</ion-select-option>
+            <ion-select-option value="BSD">Dollar - Bahamas</ion-select-option>
+            <ion-select-option value="BZD">Dollar - Belize</ion-select-option>
+            <ion-select-option value="BMD">Dollar - Bermuda</ion-select-option>
+            <ion-select-option value="BND">Dollar - Brunei</ion-select-option>
+            <ion-select-option value="CAD">Dollar - Canada</ion-select-option>
+            <ion-select-option value="XCD">Dollar - Caribbean States</ion-select-option>
+            <ion-select-option value="KYD">Dollar - Cayman Islands</ion-select-option>
+            <ion-select-option value="FJD">Dollar - Fiji</ion-select-option>
+            <ion-select-option value="GYD">Dollar - Guyana</ion-select-option>
+            <ion-select-option value="HKD">Dollar - Hong Kong</ion-select-option>
+            <ion-select-option value="JMD">Dollar - Jamaica</ion-select-option>
+            <ion-select-option value="KID">Dollar - Kiribati</ion-select-option>
+            <ion-select-option value="LRD">Dollar - Liberia</ion-select-option>
+            <ion-select-option value="NAD">Dollar - Namibia</ion-select-option>
+            <ion-select-option value="NZD">Dollar - New Zealand</ion-select-option>
+            <ion-select-option value="SBD">Dollar - Solomon Islands</ion-select-option>
+            <ion-select-option value="SGD">Dollar - Singapore</ion-select-option>
+            <ion-select-option value="SRD">Dollar - Suriname</ion-select-option>
+            <ion-select-option value="TTD">Dollar - Trinidad and Tobago</ion-select-option>
+            <ion-select-option value="TWD">Dollar - Taiwan</ion-select-option>
+            <ion-select-option value="TVD">Dollar - Tuvalu</ion-select-option>
+            <ion-select-option value="USD">Dollar - United States</ion-select-option>
+            <ion-select-option value="ZWL">Dollar - Zimbabwe</ion-select-option>
+            <ion-select-option value="DJF">Djiboutian Franc - Djibouti</ion-select-option>
+            <ion-select-option value="DKK">Danish Krone - Denmark</ion-select-option>
+            <ion-select-option value="AMD">Dram - Armenia</ion-select-option>
+            <ion-select-option value="DOP">Dominican Peso - Dominican Republic</ion-select-option>
+            <ion-select-option value="VND">Đồng - Vietnam</ion-select-option>
+            <ion-select-option value="EGP">Egyptian Pound - Egypt</ion-select-option>
+            <ion-select-option value="ERN">Eritrean Nakfa - Eritrea</ion-select-option>
+            <ion-select-option value="ETB">Ethiopian Birr - Ethiopia</ion-select-option>
+            <ion-select-option value="EUR">Euro - European Union</ion-select-option>
+            <ion-select-option value="SZL">Eswatini Lilangeni - Eswatini</ion-select-option>
+            <ion-select-option value="AWG">Florin - Aruba</ion-select-option>
+            <ion-select-option value="BIF">Franc - Burundi</ion-select-option>
+            <ion-select-option value="FKP">Falkland Islands Pound - Falkland Islands</ion-select-option>
+            <ion-select-option value="FOK">Faroese Króna - Faroe Islands</ion-select-option>
+            <ion-select-option value="ANG">Guilder - Netherlands Antilles</ion-select-option>
+            <ion-select-option value="GEL">Georgian Lari - Georgia</ion-select-option>
+            <ion-select-option value="GGP">Guernsey Pound - Guernsey</ion-select-option>
+            <ion-select-option value="GHS">Ghanaian Cedi - Ghana</ion-select-option>
+            <ion-select-option value="GIP">Gibraltar Pound - Gibraltar</ion-select-option>
+            <ion-select-option value="GMD">Gambian Dalasi - The Gambia</ion-select-option>
+            <ion-select-option value="GNF">Guinean Franc - Guinea</ion-select-option>
+            <ion-select-option value="GTQ">Guatemalan Quetzal - Guatemala</ion-select-option>
+            <ion-select-option value="HNL">Honduran Lempira - Honduras</ion-select-option>
+            <ion-select-option value="HTG">Haitian Gourde - Haiti</ion-select-option>
+            <ion-select-option value="HUF">Hungarian Forint - Hungary</ion-select-option>
+            <ion-select-option value="UAH">Hryvnia - Ukraine</ion-select-option>
+            <ion-select-option value="INR">Indian Rupee - India</ion-select-option>
+            <ion-select-option value="IQD">Iraqi Dinar - Iraq</ion-select-option>
+            <ion-select-option value="IRR">Iranian Rial - Iran</ion-select-option>
+            <ion-select-option value="ISK">Icelandic Króna - Iceland</ion-select-option>
+            <ion-select-option value="IDR">Indonesian Rupiah - Indonesia</ion-select-option>
+            <ion-select-option value="ILS">Israeli New Shekel - Israel</ion-select-option>
+            <ion-select-option value="JEP">Jersey Pound - Jersey</ion-select-option>
+            <ion-select-option value="JOD">Jordanian Dinar - Jordan</ion-select-option>
+            <ion-select-option value="JPY">Japanese Yen - Japan</ion-select-option>
+            <ion-select-option value="AOA">Kwanza - Angola</ion-select-option>
+            <ion-select-option value="KES">Kenyan Shilling - Kenya</ion-select-option>
+            <ion-select-option value="KGS">Kyrgyzstani Som - Kyrgyzstan</ion-select-option>
+            <ion-select-option value="KWD">Kuwaiti Dinar - Kuwait</ion-select-option>
+            <ion-select-option value="KZT">Kazakhstani Tenge - Kazakhstan</ion-select-option>
+            <ion-select-option value="ZMW">Kwacha - Zambia</ion-select-option>
+            <ion-select-option value="ALL">Lek - Albania</ion-select-option>
+            <ion-select-option value="BGN">Lev - Bulgaria</ion-select-option>
+            <ion-select-option value="LAK">Lao Kip - Laos</ion-select-option>
+            <ion-select-option value="LBP">Lebanese Pound - Lebanon</ion-select-option>
+            <ion-select-option value="LSL">Lesotho Loti - Lesotho</ion-select-option>
+            <ion-select-option value="LYD">Libyan Dinar - Libya</ion-select-option>
+            <ion-select-option value="MAD">Moroccan Dirham - Morocco</ion-select-option>
+            <ion-select-option value="MDL">Moldovan Leu - Moldova</ion-select-option>
+            <ion-select-option value="MGA">Malagasy Ariary - Madagascar</ion-select-option>
+            <ion-select-option value="MKD">Macedonian Denar - North Macedonia</ion-select-option>
+            <ion-select-option value="MNT">Mongolian Tögrög - Mongolia</ion-select-option>
+            <ion-select-option value="MOP">Macanese Pataca - Macau</ion-select-option>
+            <ion-select-option value="MRU">Mauritanian Ouguiya - Mauritania</ion-select-option>
+            <ion-select-option value="MUR">Mauritian Rupee - Mauritius</ion-select-option>
+            <ion-select-option value="MVR">Maldivian Rufiyaa - Maldives</ion-select-option>
+            <ion-select-option value="MWK">Malawian Kwacha - Malawi</ion-select-option>
+            <ion-select-option value="MXN">Mexican Peso - Mexico</ion-select-option>
+            <ion-select-option value="MYR">Malaysian Ringgit - Malaysia</ion-select-option>
+            <ion-select-option value="MZN">Mozambican Metical - Mozambique</ion-select-option>
+            <ion-select-option value="AZN">Manat - Azerbaijan</ion-select-option>
+            <ion-select-option value="BAM">Mark - Bosnia and Herzegovina</ion-select-option>
+            <ion-select-option value="IMP">Manx Pound - Isle of Man</ion-select-option>
+            <ion-select-option value="BTN">Ngultrum - Bhutan</ion-select-option>
+            <ion-select-option value="NGN">Nigerian Naira - Nigeria</ion-select-option>
+            <ion-select-option value="NIO">Nicaraguan Córdoba - Nicaragua</ion-select-option>
+            <ion-select-option value="NOK">Norwegian Krone - Norway</ion-select-option>
+            <ion-select-option value="NPR">Nepalese Rupee - Nepal</ion-select-option>
+            <ion-select-option value="OMR">Omani Rial - Oman</ion-select-option>
+            <ion-select-option value="ARS">Peso - Argentina</ion-select-option>
+            <ion-select-option value="UYU">Peso - Uruguay</ion-select-option>
+            <ion-select-option value="BWP">Pula - Botswana</ion-select-option>
+            <ion-select-option value="GBP">Pound Sterling - United Kingdom</ion-select-option>
+            <ion-select-option value="PAB">Panamanian Balboa - Panama</ion-select-option>
+            <ion-select-option value="PEN">Peruvian Sol - Peru</ion-select-option>
+            <ion-select-option value="PGK">Papua New Guinean Kina - Papua New Guinea</ion-select-option>
+            <ion-select-option value="PHP">Philippine Peso - Philippines</ion-select-option>
+            <ion-select-option value="PKR">Pakistani Rupee - Pakistan</ion-select-option>
+            <ion-select-option value="PLN">Polish Złoty - Poland</ion-select-option>
+            <ion-select-option value="PYG">Paraguayan Guaraní - Paraguay</ion-select-option>
+            <ion-select-option value="QAR">Qatari Riyal - Qatar</ion-select-option>
+            <ion-select-option value="BRL">Real - Brazil</ion-select-option>
+            <ion-select-option value="BYN">Ruble - Belarus</ion-select-option>
+            <ion-select-option value="RON">Romanian Leu - Romania</ion-select-option>
+            <ion-select-option value="RUB">Russian Ruble - Russia</ion-select-option>
+            <ion-select-option value="RWF">Rwandan Franc - Rwanda</ion-select-option>
+            <ion-select-option value="YER">Rial - Yemen</ion-select-option>
+            <ion-select-option value="ZAR">Rand - South Africa</ion-select-option>
+            <ion-select-option value="KRW">South Korean Won - South Korea</ion-select-option>
+            <ion-select-option value="LKR">Sri Lanka Rupee - Sri Lanka</ion-select-option>
+            <ion-select-option value="RSD">Serbian Dinar - Serbia</ion-select-option>
+            <ion-select-option value="SAR">Saudi Riyal - Saudi Arabia</ion-select-option>
+            <ion-select-option value="SCR">Seychellois Rupee - Seychelles</ion-select-option>
+            <ion-select-option value="SDG">Sudanese Pound - Sudan</ion-select-option>
+            <ion-select-option value="SEK">Swedish Krona - Sweden</ion-select-option>
+            <ion-select-option value="SHP">Saint Helena Pound - Saint Helena</ion-select-option>
+            <ion-select-option value="SLE">Sierra Leonean Leone - Sierra Leone</ion-select-option>
+            <ion-select-option value="SOS">Somali Shilling - Somalia</ion-select-option>
+            <ion-select-option value="SSP">South Sudanese Pound - South Sudan</ion-select-option>
+            <ion-select-option value="STN">São Tomé and Príncipe Dobra - São Tomé and Príncipe</ion-select-option>
+            <ion-select-option value="SYP">Syrian Pound - Syria</ion-select-option>
+            <ion-select-option value="TZS">Shilling - Tanzania</ion-select-option>
+            <ion-select-option value="CHF">Swiss Franc - Switzerland</ion-select-option>
+            <ion-select-option value="UGX">Shilling - Uganda</ion-select-option>
+            <ion-select-option value="XDR">Special Drawing Rights - International Monetary Fund</ion-select-option>
+            <ion-select-option value="UZS">So'm - Uzbekistan</ion-select-option>
+            <ion-select-option value="BDT">Taka - Bangladesh</ion-select-option>
+            <ion-select-option value="WST">Tālā - Samoa</ion-select-option>
+            <ion-select-option value="THB">Thai Baht - Thailand</ion-select-option>
+            <ion-select-option value="TJS">Tajikistani Somoni - Tajikistan</ion-select-option>
+            <ion-select-option value="TMT">Turkmenistan Manat - Turkmenistan</ion-select-option>
+            <ion-select-option value="TND">Tunisian Dinar - Tunisia</ion-select-option>
+            <ion-select-option value="TOP">Tongan Paʻanga - Tonga</ion-select-option>
+            <ion-select-option value="TRY">Turkish Lira - Turkey</ion-select-option>
+            <ion-select-option value="AED">UAE Dirham - Arab Emirates</ion-select-option>
+            <ion-select-option value="VUV">Vatu - Vanuatu</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <!-- Ion-item para valor base -->
+
+        <!-- Ion-item para valor convertido -->
+        <ion-item>
+          <ion-textarea (click)="editField('baseCurrency')" [(ngModel)]="convertedMoney.baseCurrency">
+            <div slot="label">Moeda Convertida:</div>
+          </ion-textarea>
+          <ion-select aria-label="Moeda Base" interface="popover" [(ngModel)]="baseCurrency" placeholder="baseCurrency">
+            <ion-select-option value="AFN">Afghani - Afghanistan</ion-select-option>
+            <ion-select-option value="DZD">Algerian Dinar - Algeria</ion-select-option>
+            <ion-select-option value="BOB">Boliviano - Bolivia</ion-select-option>
+            <ion-select-option value="VES">Bolívar - Venezuela</ion-select-option>
+            <ion-select-option value="MMK">Burmese Kyat - Myanmar</ion-select-option>
+            <ion-select-option value="CDF">Congolese Franc - Democratic Republic of the Congo</ion-select-option>
+            <ion-select-option value="CLP">Chilean Peso - Chile</ion-select-option>
+            <ion-select-option value="CNY">Chinese Renminbi - China</ion-select-option>
+            <ion-select-option value="COP">Colombian Peso - Colombia</ion-select-option>
+            <ion-select-option value="CRC">Costa Rican Colon - Costa Rica</ion-select-option>
+            <ion-select-option value="CUP">Cuban Peso - Cuba</ion-select-option>
+            <ion-select-option value="CVE">Cape Verdean Escudo - Cape Verde</ion-select-option>
+            <ion-select-option value="CZK">Czech Koruna - Czech Republic</ion-select-option>
+            <ion-select-option value="HRK">Croatian Kuna - Croatia</ion-select-option>
+            <ion-select-option value="KHR">Cambodian Riel - Cambodia</ion-select-option>
+            <ion-select-option value="KMF">Comorian Franc - Comoros</ion-select-option>
+            <ion-select-option value="XAF">CFA Franc - Central African</ion-select-option>
+            <ion-select-option value="XOF">CFA franc - West African</ion-select-option>
+            <ion-select-option value="XPF">CFP Franc - Collectivités d'Outre-Mer</ion-select-option>
+            <ion-select-option value="BHD">Dinar - Bahrain</ion-select-option>
+            <ion-select-option value="AUD">Dollar - Australia</ion-select-option>
+            <ion-select-option value="BBD">Dollar - Barbados</ion-select-option>
+            <ion-select-option value="BSD">Dollar - Bahamas</ion-select-option>
+            <ion-select-option value="BZD">Dollar - Belize</ion-select-option>
+            <ion-select-option value="BMD">Dollar - Bermuda</ion-select-option>
+            <ion-select-option value="BND">Dollar - Brunei</ion-select-option>
+            <ion-select-option value="CAD">Dollar - Canada</ion-select-option>
+            <ion-select-option value="XCD">Dollar - Caribbean States</ion-select-option>
+            <ion-select-option value="KYD">Dollar - Cayman Islands</ion-select-option>
+            <ion-select-option value="FJD">Dollar - Fiji</ion-select-option>
+            <ion-select-option value="GYD">Dollar - Guyana</ion-select-option>
+            <ion-select-option value="HKD">Dollar - Hong Kong</ion-select-option>
+            <ion-select-option value="JMD">Dollar - Jamaica</ion-select-option>
+            <ion-select-option value="KID">Dollar - Kiribati</ion-select-option>
+            <ion-select-option value="LRD">Dollar - Liberia</ion-select-option>
+            <ion-select-option value="NAD">Dollar - Namibia</ion-select-option>
+            <ion-select-option value="NZD">Dollar - New Zealand</ion-select-option>
+            <ion-select-option value="SBD">Dollar - Solomon Islands</ion-select-option>
+            <ion-select-option value="SGD">Dollar - Singapore</ion-select-option>
+            <ion-select-option value="SRD">Dollar - Suriname</ion-select-option>
+            <ion-select-option value="TTD">Dollar - Trinidad and Tobago</ion-select-option>
+            <ion-select-option value="TWD">Dollar - Taiwan</ion-select-option>
+            <ion-select-option value="TVD">Dollar - Tuvalu</ion-select-option>
+            <ion-select-option value="USD">Dollar - United States</ion-select-option>
+            <ion-select-option value="ZWL">Dollar - Zimbabwe</ion-select-option>
+            <ion-select-option value="DJF">Djiboutian Franc - Djibouti</ion-select-option>
+            <ion-select-option value="DKK">Danish Krone - Denmark</ion-select-option>
+            <ion-select-option value="AMD">Dram - Armenia</ion-select-option>
+            <ion-select-option value="DOP">Dominican Peso - Dominican Republic</ion-select-option>
+            <ion-select-option value="VND">Đồng - Vietnam</ion-select-option>
+            <ion-select-option value="EGP">Egyptian Pound - Egypt</ion-select-option>
+            <ion-select-option value="ERN">Eritrean Nakfa - Eritrea</ion-select-option>
+            <ion-select-option value="ETB">Ethiopian Birr - Ethiopia</ion-select-option>
+            <ion-select-option value="EUR">Euro - European Union</ion-select-option>
+            <ion-select-option value="SZL">Eswatini Lilangeni - Eswatini</ion-select-option>
+            <ion-select-option value="AWG">Florin - Aruba</ion-select-option>
+            <ion-select-option value="BIF">Franc - Burundi</ion-select-option>
+            <ion-select-option value="FKP">Falkland Islands Pound - Falkland Islands</ion-select-option>
+            <ion-select-option value="FOK">Faroese Króna - Faroe Islands</ion-select-option>
+            <ion-select-option value="ANG">Guilder - Netherlands Antilles</ion-select-option>
+            <ion-select-option value="GEL">Georgian Lari - Georgia</ion-select-option>
+            <ion-select-option value="GGP">Guernsey Pound - Guernsey</ion-select-option>
+            <ion-select-option value="GHS">Ghanaian Cedi - Ghana</ion-select-option>
+            <ion-select-option value="GIP">Gibraltar Pound - Gibraltar</ion-select-option>
+            <ion-select-option value="GMD">Gambian Dalasi - The Gambia</ion-select-option>
+            <ion-select-option value="GNF">Guinean Franc - Guinea</ion-select-option>
+            <ion-select-option value="GTQ">Guatemalan Quetzal - Guatemala</ion-select-option>
+            <ion-select-option value="HNL">Honduran Lempira - Honduras</ion-select-option>
+            <ion-select-option value="HTG">Haitian Gourde - Haiti</ion-select-option>
+            <ion-select-option value="HUF">Hungarian Forint - Hungary</ion-select-option>
+            <ion-select-option value="UAH">Hryvnia - Ukraine</ion-select-option>
+            <ion-select-option value="INR">Indian Rupee - India</ion-select-option>
+            <ion-select-option value="IQD">Iraqi Dinar - Iraq</ion-select-option>
+            <ion-select-option value="IRR">Iranian Rial - Iran</ion-select-option>
+            <ion-select-option value="ISK">Icelandic Króna - Iceland</ion-select-option>
+            <ion-select-option value="IDR">Indonesian Rupiah - Indonesia</ion-select-option>
+            <ion-select-option value="ILS">Israeli New Shekel - Israel</ion-select-option>
+            <ion-select-option value="JEP">Jersey Pound - Jersey</ion-select-option>
+            <ion-select-option value="JOD">Jordanian Dinar - Jordan</ion-select-option>
+            <ion-select-option value="JPY">Japanese Yen - Japan</ion-select-option>
+            <ion-select-option value="AOA">Kwanza - Angola</ion-select-option>
+            <ion-select-option value="KES">Kenyan Shilling - Kenya</ion-select-option>
+            <ion-select-option value="KGS">Kyrgyzstani Som - Kyrgyzstan</ion-select-option>
+            <ion-select-option value="KWD">Kuwaiti Dinar - Kuwait</ion-select-option>
+            <ion-select-option value="KZT">Kazakhstani Tenge - Kazakhstan</ion-select-option>
+            <ion-select-option value="ZMW">Kwacha - Zambia</ion-select-option>
+            <ion-select-option value="ALL">Lek - Albania</ion-select-option>
+            <ion-select-option value="BGN">Lev - Bulgaria</ion-select-option>
+            <ion-select-option value="LAK">Lao Kip - Laos</ion-select-option>
+            <ion-select-option value="LBP">Lebanese Pound - Lebanon</ion-select-option>
+            <ion-select-option value="LSL">Lesotho Loti - Lesotho</ion-select-option>
+            <ion-select-option value="LYD">Libyan Dinar - Libya</ion-select-option>
+            <ion-select-option value="MAD">Moroccan Dirham - Morocco</ion-select-option>
+            <ion-select-option value="MDL">Moldovan Leu - Moldova</ion-select-option>
+            <ion-select-option value="MGA">Malagasy Ariary - Madagascar</ion-select-option>
+            <ion-select-option value="MKD">Macedonian Denar - North Macedonia</ion-select-option>
+            <ion-select-option value="MNT">Mongolian Tögrög - Mongolia</ion-select-option>
+            <ion-select-option value="MOP">Macanese Pataca - Macau</ion-select-option>
+            <ion-select-option value="MRU">Mauritanian Ouguiya - Mauritania</ion-select-option>
+            <ion-select-option value="MUR">Mauritian Rupee - Mauritius</ion-select-option>
+            <ion-select-option value="MVR">Maldivian Rufiyaa - Maldives</ion-select-option>
+            <ion-select-option value="MWK">Malawian Kwacha - Malawi</ion-select-option>
+            <ion-select-option value="MXN">Mexican Peso - Mexico</ion-select-option>
+            <ion-select-option value="MYR">Malaysian Ringgit - Malaysia</ion-select-option>
+            <ion-select-option value="MZN">Mozambican Metical - Mozambique</ion-select-option>
+            <ion-select-option value="AZN">Manat - Azerbaijan</ion-select-option>
+            <ion-select-option value="BAM">Mark - Bosnia and Herzegovina</ion-select-option>
+            <ion-select-option value="IMP">Manx Pound - Isle of Man</ion-select-option>
+            <ion-select-option value="BTN">Ngultrum - Bhutan</ion-select-option>
+            <ion-select-option value="NGN">Nigerian Naira - Nigeria</ion-select-option>
+            <ion-select-option value="NIO">Nicaraguan Córdoba - Nicaragua</ion-select-option>
+            <ion-select-option value="NOK">Norwegian Krone - Norway</ion-select-option>
+            <ion-select-option value="NPR">Nepalese Rupee - Nepal</ion-select-option>
+            <ion-select-option value="OMR">Omani Rial - Oman</ion-select-option>
+            <ion-select-option value="ARS">Peso - Argentina</ion-select-option>
+            <ion-select-option value="UYU">Peso - Uruguay</ion-select-option>
+            <ion-select-option value="BWP">Pula - Botswana</ion-select-option>
+            <ion-select-option value="GBP">Pound Sterling - United Kingdom</ion-select-option>
+            <ion-select-option value="PAB">Panamanian Balboa - Panama</ion-select-option>
+            <ion-select-option value="PEN">Peruvian Sol - Peru</ion-select-option>
+            <ion-select-option value="PGK">Papua New Guinean Kina - Papua New Guinea</ion-select-option>
+            <ion-select-option value="PHP">Philippine Peso - Philippines</ion-select-option>
+            <ion-select-option value="PKR">Pakistani Rupee - Pakistan</ion-select-option>
+            <ion-select-option value="PLN">Polish Złoty - Poland</ion-select-option>
+            <ion-select-option value="PYG">Paraguayan Guaraní - Paraguay</ion-select-option>
+            <ion-select-option value="QAR">Qatari Riyal - Qatar</ion-select-option>
+            <ion-select-option value="BRL">Real - Brazil</ion-select-option>
+            <ion-select-option value="BYN">Ruble - Belarus</ion-select-option>
+            <ion-select-option value="RON">Romanian Leu - Romania</ion-select-option>
+            <ion-select-option value="RUB">Russian Ruble - Russia</ion-select-option>
+            <ion-select-option value="RWF">Rwandan Franc - Rwanda</ion-select-option>
+            <ion-select-option value="YER">Rial - Yemen</ion-select-option>
+            <ion-select-option value="ZAR">Rand - South Africa</ion-select-option>
+            <ion-select-option value="KRW">South Korean Won - South Korea</ion-select-option>
+            <ion-select-option value="LKR">Sri Lanka Rupee - Sri Lanka</ion-select-option>
+            <ion-select-option value="RSD">Serbian Dinar - Serbia</ion-select-option>
+            <ion-select-option value="SAR">Saudi Riyal - Saudi Arabia</ion-select-option>
+            <ion-select-option value="SCR">Seychellois Rupee - Seychelles</ion-select-option>
+            <ion-select-option value="SDG">Sudanese Pound - Sudan</ion-select-option>
+            <ion-select-option value="SEK">Swedish Krona - Sweden</ion-select-option>
+            <ion-select-option value="SHP">Saint Helena Pound - Saint Helena</ion-select-option>
+            <ion-select-option value="SLE">Sierra Leonean Leone - Sierra Leone</ion-select-option>
+            <ion-select-option value="SOS">Somali Shilling - Somalia</ion-select-option>
+            <ion-select-option value="SSP">South Sudanese Pound - South Sudan</ion-select-option>
+            <ion-select-option value="STN">São Tomé and Príncipe Dobra - São Tomé and Príncipe</ion-select-option>
+            <ion-select-option value="SYP">Syrian Pound - Syria</ion-select-option>
+            <ion-select-option value="TZS">Shilling - Tanzania</ion-select-option>
+            <ion-select-option value="CHF">Swiss Franc - Switzerland</ion-select-option>
+            <ion-select-option value="UGX">Shilling - Uganda</ion-select-option>
+            <ion-select-option value="XDR">Special Drawing Rights - International Monetary Fund</ion-select-option>
+            <ion-select-option value="UZS">So'm - Uzbekistan</ion-select-option>
+            <ion-select-option value="BDT">Taka - Bangladesh</ion-select-option>
+            <ion-select-option value="WST">Tālā - Samoa</ion-select-option>
+            <ion-select-option value="THB">Thai Baht - Thailand</ion-select-option>
+            <ion-select-option value="TJS">Tajikistani Somoni - Tajikistan</ion-select-option>
+            <ion-select-option value="TMT">Turkmenistan Manat - Turkmenistan</ion-select-option>
+            <ion-select-option value="TND">Tunisian Dinar - Tunisia</ion-select-option>
+            <ion-select-option value="TOP">Tongan Paʻanga - Tonga</ion-select-option>
+            <ion-select-option value="TRY">Turkish Lira - Turkey</ion-select-option>
+            <ion-select-option value="AED">UAE Dirham - Arab Emirates</ion-select-option>
+            <ion-select-option value="VUV">Vatu - Vanuatu</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <!-- Ion-item para valor convertido -->
+      
+        <!-- Teclado Virtual -->
+        <div class="calculator">
+          <div class="buttons">
+            <ion-button (click)="appendValueMoney(7)">7</ion-button>
+            <ion-button (click)="appendValueMoney(8)">8</ion-button>
+            <ion-button (click)="appendValueMoney(9)">9</ion-button>
+            <ion-button (click)="clearInputMoney()">C</ion-button>
+      
+            <ion-button (click)="appendValueMoney(4)">4</ion-button>
+            <ion-button (click)="appendValueMoney(5)">5</ion-button>
+            <ion-button (click)="appendValueMoney(6)">6</ion-button>
+            <ion-button (click)="backspaceMoney()">⌫</ion-button>
+      
+            <ion-button (click)="appendValueMoney(1)">1</ion-button>
+            <ion-button (click)="appendValueMoney(2)">2</ion-button>
+            <ion-button (click)="appendValueMoney(3)">3</ion-button>
+            <ion-button style="opacity: 0%;"></ion-button>
+      
+            <ion-button style="opacity: 0%;"></ion-button>
+            <ion-button (click)="appendValueMoney(0)">0</ion-button>
+            <ion-button (click)="appendValueMoney('.')">.</ion-button>
+          </div>
+        </div>
+        <!-- Teclado Virtual -->
+      </div>
+      <!-- Moeda -->
+
+      <!-- Programador -->
+      <div *ngIf="selectedPage === 'Programador'">
+        <h2><ion-icon name="code-slash-outline"></ion-icon> Programador</h2>
+
+        
+        <!-- converssor class="container"-->
+        <div >            
+          <ion-list>
+            <h4> Valor padrão</h4>
+            <ion-item>
+              <ion-textarea placeholder="Insira um valor" [(ngModel)]="convertedProg.valor" (ngModelChange)="updateProg('valor')"></ion-textarea>
+
+            </ion-item>
+
+            <h4> Binario</h4>
+            <ion-item>
+              <ion-textarea placeholder="Exemplo: 1010" (click)="editField('binaria')" [(ngModel)]="convertedProg.binaria" (ngModelChange)="updateProg('binaria')"></ion-textarea>
+            </ion-item>
+
+            <h4> Hexadecimal</h4>
+            <ion-item>
+              <ion-textarea placeholder="Exemplo: A1B2" (click)="editField('hexadecimal')" [(ngModel)]="convertedProg.hexadecimal" (ngModelChange)="updateProg('hexadecimal')"></ion-textarea>
+            </ion-item>
+
+            <h4> Octal</h4>
+            <ion-item>
+              <ion-textarea (click)="editField('octal')" [(ngModel)]="convertedProg.octal" (ngModelChange)="updateProg('octal')"></ion-textarea>
+            </ion-item>
+
+            <h4> Decimal</h4>
+            <ion-item>
+              <ion-textarea (click)="editField('decimal')" [(ngModel)]="convertedProg.decimal" (ngModelChange)="updateProg('decimal')"></ion-textarea>
+            </ion-item>
+
+            <h4> Base64</h4>
+            <ion-item>
+              <ion-textarea placeholder="Exemplo: SGVsbG8=" (click)="editField('base64')" [(ngModel)]="convertedProg.base64" (ngModelChange)="updateProg('base64')"></ion-textarea>
+            </ion-item>
+
+            <h4> ASCII</h4>
+            <ion-item>
+              <ion-textarea (click)="editField('ascii')" [(ngModel)]="convertedProg.ascii" (ngModelChange)="updateProg('ascii')"></ion-textarea>
+            </ion-item>
+
+            <h4> Hash SHA1</h4>
+            <ion-item>
+              <ion-textarea (click)="editField('hashsha1')" [(ngModel)]="convertedProg.hashsha1" (ngModelChange)="updateProg('hashsha1')"></ion-textarea>
+            </ion-item>
+
+            <h4> Hash SHA256</h4>
+            <ion-item>
+              <ion-textarea (click)="editField('hashsha256')" [(ngModel)]="convertedProg.hashsha256" (ngModelChange)="updateProg('hashsha256')"></ion-textarea>
+            </ion-item>
+          </ion-list>
+        </div>
+        <!-- converssor -->
+      </div>
+      <!-- Programador -->
+    </ion-content>
+  </div>
+</ion-app>
